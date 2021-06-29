@@ -1,0 +1,42 @@
+.bsp
+
+# Created by https://www.toptal.com/developers/gitignore/api/sbt
+# Edit at https://www.toptal.com/developers/gitignore?templates=sbt
+
+### SBT ###
+# Simple Build Tool
+# http://www.scala-sbt.org/release/docs/Getting-Started/Directories.html#configuring-version-control
+
+dist/*
+target/
+lib_managed/
+src_managed/
+project/boot/
+project/plugins/project/
+.history
+.cache
+.lib/
+
+# End of https://www.toptal.com/developers/gitignore/api/sbt
+
+# Created by https://www.toptal.com/developers/gitignore/api/scala
+# Edit at https://www.toptal.com/developers/gitignore?templates=scala
+
+### Scala ###
+*.class
+*.log
+
+# virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
+hs_err_pid*
+
+# End of https://www.toptal.com/developers/gitignore/api/scala
+
+# Created by https://www.toptal.com/developers/gitignore/api/metals
+# Edit at https://www.toptal.com/developers/gitignore?templates=metals
+
+### Metals ###
+.metals/
+.bloop/
+project/**/metals.sbt
+
+# End of https://www.toptal.com/developers/gitignore/api/metals
