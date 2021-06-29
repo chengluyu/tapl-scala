@@ -36,7 +36,7 @@ object Type {
 
   case class Record(entries: HashMap[String, Type]) extends Type {
     def display: String = "Record { " + (for ((name, ty) <- entries)
-      yield name + ": " + ty.display) + " }"
+      yield name + ": " + ty.display).reduce(_ + _) + " }"
     def isSubTypeOf(that: Type): Boolean = that match {
       case Top() => true
       case Record(entries) =>

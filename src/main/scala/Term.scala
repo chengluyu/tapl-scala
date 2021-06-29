@@ -27,7 +27,7 @@ object Term {
         entries map (entry => (entry._1, entry._2.getType(context)))
       )
     override def toString: String = "{ " + (for ((name, value) <- entries)
-      yield name + ": " + value.toString()) + " }"
+      yield name + ": " + value.toString()).reduce(_ + _) + " }"
   }
 
   final case class If(test: Term, consequent: Term, alternate: Term)
