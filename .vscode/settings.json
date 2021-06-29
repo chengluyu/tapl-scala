@@ -1,4 +1,10 @@
 {
+  "[scala]": {
+    "editor.suggestSelection": "first",
+    "editor.formatOnPaste": true,
+    "editor.formatOnType": true,
+    "editor.tabSize": 2
+  },
   "files.watcherExclude": {
     "**/target": true
   }
