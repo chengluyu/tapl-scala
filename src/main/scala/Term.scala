@@ -42,10 +42,17 @@ object Term {
         ) {
           consequentType
         } else {
-          throw new MyException("branches must be in the same type")
+          throw new MyException(
+            s"""branches of the if statement must be in the same type
+               |  consequent :: $consequentType
+               |  alternate  :: $alternateType""".stripMargin
+          )
         }
       }
-      case _ => throw new MyException("test must evaluate to a boolean")
+      case testType =>
+        throw new MyException(
+          s"expect condition of the if statement to be boolean, however received $testType"
+        )
     }
     override def toString: String = s"if $test then $consequent else $alternate"
   }
@@ -54,7 +61,11 @@ object Term {
     def getType(context: Context): Type = target.getType(context) match {
       case Type.Record(entries) =>
         entries.getOrElse(field, throw new MyException("invalid field"))
-      case _ => throw new MyException("only record types are projectable")
+      case targetType =>
+        throw new MyException(
+          s"""only record types are projectable,
+             |however $target is $targetType""".stripMargin
+        )
     }
     override def toString: String = target match {
       case target @ If(_, _, _) => s"($target).$field"
@@ -81,10 +92,14 @@ object Term {
         if (argumentType.isSubTypeOf(parameterType)) {
           returnType
         } else {
-          throw new MyException("argument type mismatch")
+          throw new MyException(s"""argument type mismatch
+                                   |  expect $parameterType
+                                   |  received $argumentType""".stripMargin)
         }
       }
-      case _ => throw new MyException("callee is not a function")
+      case calleeType =>
+        throw new MyException(s"""callee is not a function
+                                 |however received $calleeType""".stripMargin)
     }
     override def toString: String = (callee match {
       case callee @ If(_, _, _) => s"($callee)"

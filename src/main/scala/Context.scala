@@ -8,7 +8,8 @@ class Context {
   def getType(name: String): Type = {
     bindings.find { _._1 == name } match {
       case Some(value) => value._2.termType
-      case None        => throw new MyException("cannot find the binding")
+      case None =>
+        throw new MyException(s"cannot find the binding with name $name")
     }
   }
 
