@@ -74,7 +74,7 @@ object Term {
     def getType(context: Context): Type =
       Type.Function(parameterType, body.getType(context))
     override def toString: String =
-      "(" + parameter + ": " + parameterType.display + ") => " + body.toString
+      "(" + parameter + ": " + parameterType + ") => " + body.toString
   }
 
   final case class Apply(callee: Term, argument: Term) extends Term {

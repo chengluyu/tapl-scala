@@ -1,13 +1,13 @@
 import scala.collection.immutable.HashMap
 
 trait Type {
-  def display: String
+  override def toString: String
   def isSubTypeOf(that: Type): Boolean
 }
 
 object Type {
   case class Bool() extends Type {
-    def display: String = "Bool"
+    override def toString: String = "Bool"
     def isSubTypeOf(that: Type): Boolean = that match {
       case Top() => true
       case _     => false
@@ -15,7 +15,7 @@ object Type {
   }
 
   case class Int() extends Type {
-    def display: String = "Int"
+    override def toString: String = "Int"
     def isSubTypeOf(that: Type): Boolean = that match {
       case Top() => true
       case _     => false
@@ -23,7 +23,7 @@ object Type {
   }
 
   case class Function(paramType: Type, returnType: Type) extends Type {
-    def display: String = paramType.display + " -> " + returnType.display
+    override def toString: String = s"$paramType -> $returnType"
     def isSubTypeOf(that: Type): Boolean = that match {
       case Top() => true
       case Function(paramType, returnType) =>
@@ -35,8 +35,8 @@ object Type {
   }
 
   case class Record(entries: HashMap[String, Type]) extends Type {
-    def display: String = "Record { " + (for ((name, ty) <- entries)
-      yield name + ": " + ty.display).reduce(_ + _) + " }"
+    override def toString: String = "Record { " + (for ((name, ty) <- entries)
+      yield s"$name: $ty").reduce(_ + _) + " }"
     def isSubTypeOf(that: Type): Boolean = that match {
       case Top() => true
       case Record(entries) =>
@@ -51,7 +51,7 @@ object Type {
   }
 
   case class Top() extends Type {
-    def display: String = "Top"
+    override def toString: String = "Top"
     def isSubTypeOf(that: Type): Boolean = that match {
       case Top() => true
       case _     => false
