@@ -2,8 +2,7 @@ import scala.collection.immutable.{ArraySeq, HashMap}
 
 class Binding(val termType: Type)
 
-class Context {
-  var bindings = ArraySeq.empty[(String, Binding)]
+class Context(val bindings: ArraySeq[(String, Binding)] = ArraySeq.empty) {
 
   def getType(name: String): Type = {
     bindings.find { _._1 == name } match {
@@ -13,13 +12,11 @@ class Context {
     }
   }
 
-  def add(name: String, termType: Type) = {
-    bindings = bindings.prepended((name, new Binding(termType)))
-  }
+  def add(name: String, termType: Type) =
+    new Context(bindings.prepended((name, new Binding(termType))))
 
-  def remove(name: String) = {
-    for (binding <- bindings.find { _._1 == name }) {
-      bindings = bindings.filter { _ != binding }
-    }
+  def remove(name: String) = (bindings.find { _._1 == name }) match {
+    case Some(binding) => new Context(bindings.filter { _ != binding })
+    case None          => this
   }
 }

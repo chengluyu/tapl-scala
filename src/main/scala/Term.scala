@@ -81,7 +81,10 @@ object Term {
   final case class Abstract(parameter: String, parameterType: Type, body: Term)
       extends Term {
     def getType(context: Context): Type =
-      Type.Function(parameterType, body.getType(context))
+      Type.Function(
+        parameterType,
+        body.getType(context.add(parameter, parameterType))
+      )
     override def toString: String = s"($parameter: $parameterType) => $body"
   }
 
