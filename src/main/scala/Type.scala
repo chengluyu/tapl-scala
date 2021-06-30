@@ -10,8 +10,8 @@ object Type {
     override def toString: String = "Bool"
 
     def isSubTypeOf(that: Type): Boolean = that match {
-      case Top() => true
-      case _     => false
+      case Top() | Bool() => true
+      case _              => false
     }
   }
 
@@ -19,8 +19,8 @@ object Type {
     override def toString: String = "Int"
 
     def isSubTypeOf(that: Type): Boolean = that match {
-      case Top() => true
-      case _     => false
+      case Top() | Int() => true
+      case _             => false
     }
   }
 
