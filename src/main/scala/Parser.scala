@@ -4,7 +4,8 @@ import scala.collection.immutable.HashMap
 object Parser {
   def parse(x: String) = fastparse.parse(x, TermParser.root(_))
 
-  private def ident[_: P]: P[String] = CharIn("a-zA-Z").repX(1).!
+  private def ident[_: P] = CharIn("a-zA-Z").repX(1).!
+  private def digits[_: P] = CharIn("0-9").repX(1).!
 
   private object TermParser {
     def root[_: P]: P[Term] = P(term ~ End)
@@ -27,19 +28,13 @@ object Parser {
     def paren[_: P]: P[Term] = P("(" ~ term ~ ")")
     def yea[_: P]: P[Term.True] = P("true").map(_ => new Term.True())
     def nay[_: P]: P[Term.False] = P("false").map(_ => new Term.False())
-    def int[_: P]: P[Term.Int] = P(
-      CharIn("0-9").repX(1).!.map(x => new Term.Int(x.toInt))
-    )
+    def int[_: P]: P[Term.Int] = P(digits.map(_.toInt).map(Term.Int))
     def condition[_: P]: P[Term.If] = P(
-      ("if" ~/ term ~/ "then" ~/ term ~/ "else" ~/ term).map({ case (a, b, c) =>
-        new Term.If(a, b, c)
-      })
+      ("if" ~/ term ~/ "then" ~/ term ~/ "else" ~/ term).map(Term.If.fromTuple)
     )
     def abstraction[_: P]: P[Term.Abstract] = P(
-      ("(" ~ ident ~ ":" ~ TypeParser.termType ~ ")" ~ "=>" ~ term).map({
-        case (a, b, c) =>
-          new Term.Abstract(a, b, c)
-      })
+      ("(" ~ ident ~ ":" ~ TypeParser.root ~ ")" ~ "=>" ~ term)
+        .map(Term.Abstract.fromTuple)
     )
     def variable[_: P]: P[Term.Variable] = P(ident.map(Term.Variable))
     def record[_: P]: P[Term.Record] = P(
@@ -51,18 +46,18 @@ object Parser {
   }
 
   private object TypeParser {
-    def termType[_: P]: P[Type] = P(
+    def root[_: P]: P[Type] = P(
       atom.rep(1, sep = "->").map(_.reduceLeft(Type.Function))
     )
     def atom[_: P]: P[Type] = P(bool | int | top | paren | record)
     def bool[_: P]: P[Type] = P("Bool").map(_ => new Type.Bool())
     def int[_: P]: P[Type] = P("Int").map(_ => new Type.Int())
     def top[_: P]: P[Type] = P("Any").map(_ => new Type.Top())
-    def paren[_: P]: P[Type] = P("(" ~/ termType ~ ")")
+    def paren[_: P]: P[Type] = P("(" ~/ root ~ ")")
     def record[_: P]: P[Type] = P(
       "{" ~/ entry.rep(sep = ",").map(HashMap.from).map(Type.Record) ~ "}"
     )
-    def entry[_: P]: P[(String, Type)] = P(ident ~/ ":" ~ termType)
+    def entry[_: P]: P[(String, Type)] = P(ident ~/ ":" ~ root)
 
   }
 }

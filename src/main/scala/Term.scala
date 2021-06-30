@@ -30,6 +30,10 @@ object Term {
       yield s"$name: $value").mkString("{ ", ", ", " }")
   }
 
+  object If {
+    def fromTuple(t: (Term, Term, Term)) = new If(t._1, t._2, t._3)
+  }
+
   final case class If(test: Term, consequent: Term, alternate: Term)
       extends Term {
     def getType(context: Context): Type = test.getType(context) match {
@@ -76,6 +80,10 @@ object Term {
   final case class Variable(name: String) extends Term {
     def getType(context: Context): Type = context.getType(name)
     override def toString: String = name
+  }
+
+  object Abstract {
+    def fromTuple(t: (String, Type, Term)) = new Abstract(t._1, t._2, t._3)
   }
 
   final case class Abstract(parameter: String, parameterType: Type, body: Term)
