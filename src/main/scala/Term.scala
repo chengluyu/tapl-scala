@@ -18,7 +18,7 @@ object Term {
 
   final case class Int(value: scala.Int) extends Term {
     def getType(context: Context): Type = new Type.Int
-    override def toString: String = value.toString()
+    override def toString: String = value.toString
   }
 
   final case class Record(entries: HashMap[String, Term]) extends Term {
@@ -26,8 +26,8 @@ object Term {
       new Type.Record(
         entries map (entry => (entry._1, entry._2.getType(context)))
       )
-    override def toString: String = "{ " + (for ((name, value) <- entries)
-      yield name + ": " + value.toString()).reduce(_ + _) + " }"
+    override def toString: String = (for ((name, value) <- entries)
+      yield s"$name: $value").mkString("{ ", ", ", " }")
   }
 
   final case class If(test: Term, consequent: Term, alternate: Term)
@@ -47,9 +47,7 @@ object Term {
       }
       case _ => throw new MyException("test must evaluate to a boolean")
     }
-    override def toString: String =
-      "if " + test.toString + " then " + consequent.toString + " else " +
-        alternate.toString
+    override def toString: String = s"if $test then $consequent else $alternate"
   }
 
   final case class Project(target: Term, field: String) extends Term {
@@ -59,8 +57,8 @@ object Term {
       case _ => throw new MyException("only record types are projectable")
     }
     override def toString: String = target match {
-      case target @ If(_, _, _) => "(" + target.toString + ")" + "." + field
-      case _                    => target.toString + "." + field
+      case target @ If(_, _, _) => s"($target).$field"
+      case _                    => s"$target.$field"
     }
   }
 
@@ -73,8 +71,7 @@ object Term {
       extends Term {
     def getType(context: Context): Type =
       Type.Function(parameterType, body.getType(context))
-    override def toString: String =
-      "(" + parameter + ": " + parameterType + ") => " + body.toString
+    override def toString: String = s"($parameter: $parameterType) => $body"
   }
 
   final case class Apply(callee: Term, argument: Term) extends Term {
@@ -90,8 +87,8 @@ object Term {
       case _ => throw new MyException("callee is not a function")
     }
     override def toString: String = (callee match {
-      case callee @ If(_, _, _) => "(" + callee.toString + ")"
+      case callee @ If(_, _, _) => s"($callee)"
       case _                    => callee.toString
-    }) + "(" + argument.toString + ")"
+    }) + s"($argument)"
   }
 }

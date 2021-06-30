@@ -8,6 +8,7 @@ trait Type {
 object Type {
   case class Bool() extends Type {
     override def toString: String = "Bool"
+
     def isSubTypeOf(that: Type): Boolean = that match {
       case Top() => true
       case _     => false
@@ -16,6 +17,7 @@ object Type {
 
   case class Int() extends Type {
     override def toString: String = "Int"
+
     def isSubTypeOf(that: Type): Boolean = that match {
       case Top() => true
       case _     => false
@@ -24,6 +26,7 @@ object Type {
 
   case class Function(paramType: Type, returnType: Type) extends Type {
     override def toString: String = s"$paramType -> $returnType"
+
     def isSubTypeOf(that: Type): Boolean = that match {
       case Top() => true
       case Function(paramType, returnType) =>
@@ -35,8 +38,9 @@ object Type {
   }
 
   case class Record(entries: HashMap[String, Type]) extends Type {
-    override def toString: String = "Record { " + (for ((name, ty) <- entries)
-      yield s"$name: $ty").reduce(_ + _) + " }"
+    override def toString: String = (for ((name, ty) <- entries)
+      yield s"$name: $ty").mkString("Record { ", ", ", " }")
+
     def isSubTypeOf(that: Type): Boolean = that match {
       case Top() => true
       case Record(entries) =>
@@ -52,6 +56,7 @@ object Type {
 
   case class Top() extends Type {
     override def toString: String = "Top"
+
     def isSubTypeOf(that: Type): Boolean = that match {
       case Top() => true
       case _     => false
