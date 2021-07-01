@@ -2,7 +2,7 @@ import scala.collection.immutable.HashMap
 
 trait Type {
   override def toString: String
-  def <::(that: Type): Boolean
+  def :<(that: Type): Boolean
   def ==(other: Type): Boolean
 }
 
@@ -10,7 +10,7 @@ object Type {
   case class Bool() extends Type {
     override def toString: String = "Bool"
 
-    def <::(that: Type): Boolean = that match {
+    def :<(that: Type): Boolean = that match {
       case Top() | Bool() => true
       case _              => false
     }
@@ -24,7 +24,7 @@ object Type {
   case class Int() extends Type {
     override def toString: String = "Int"
 
-    def <::(that: Type): Boolean = that match {
+    def :<(that: Type): Boolean = that match {
       case Top() | Int() => true
       case _             => false
     }
@@ -38,12 +38,10 @@ object Type {
   case class Function(paramType: Type, returnType: Type) extends Type {
     override def toString: String = s"$paramType -> $returnType"
 
-    def <::(that: Type): Boolean = that match {
+    def :<(that: Type): Boolean = that match {
       case Top() => true
       case Function(paramType, returnType) =>
-        this.paramType.<::(paramType) && this.returnType.<::(
-          paramType
-        )
+        this.paramType :< paramType && this.returnType :< paramType
       case _ => false
     }
 
@@ -58,12 +56,12 @@ object Type {
     override def toString: String = (for ((name, ty) <- entries)
       yield s"$name: $ty").mkString("Record { ", ", ", " }")
 
-    def <::(that: Type): Boolean = that match {
+    def :<(that: Type): Boolean = that match {
       case Top() => true
       case Record(entries) =>
         entries forall (entry => {
           this.entries.get(entry._1) match {
-            case Some(value) => value.<::(entry._2)
+            case Some(value) => value :< entry._2
             case None        => false
           }
         })
@@ -83,7 +81,7 @@ object Type {
   case class Top() extends Type {
     override def toString: String = "Top"
 
-    def <::(that: Type): Boolean = that match {
+    def :<(that: Type): Boolean = that match {
       case Top() => true
       case _     => false
     }
