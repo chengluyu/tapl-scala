@@ -40,9 +40,9 @@ object Term {
       case Type.Bool() => {
         val consequentType = consequent.getType(context)
         val alternateType = alternate.getType(context)
-        if (alternateType isSubTypeOf consequentType) {
+        if (alternateType <:: consequentType) {
           consequentType
-        } else if (consequentType isSubTypeOf alternateType) {
+        } else if (consequentType <:: alternateType) {
           alternateType
         } else {
           throw new MyException(
@@ -99,7 +99,7 @@ object Term {
     def getType(context: Context): Type = callee.getType(context) match {
       case Type.Function(parameterType, returnType) => {
         val argumentType = argument.getType(context)
-        if (argumentType.isSubTypeOf(parameterType)) {
+        if (argumentType <:: parameterType) {
           returnType
         } else {
           throw new MyException(s"""argument type mismatch
