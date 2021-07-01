@@ -40,10 +40,7 @@ object Term {
       case Type.Bool() => {
         val consequentType = consequent.getType(context)
         val alternateType = alternate.getType(context)
-        if (
-          consequentType.isSubTypeOf(alternateType) && alternateType
-            .isSubTypeOf(consequentType)
-        ) {
+        if (consequentType == alternateType) {
           consequentType
         } else {
           throw new MyException(

@@ -3,6 +3,7 @@ import scala.collection.immutable.HashMap
 trait Type {
   override def toString: String
   def isSubTypeOf(that: Type): Boolean
+  def ==(other: Type): Boolean
 }
 
 object Type {
@@ -13,12 +14,22 @@ object Type {
       case Top() | Bool() => true
       case _              => false
     }
+
+    def ==(that: Type): Boolean = that match {
+      case Bool() => true
+      case _      => false
+    }
   }
 
   case class Int() extends Type {
     override def toString: String = "Int"
 
     def isSubTypeOf(that: Type): Boolean = that match {
+      case Top() | Int() => true
+      case _             => false
+    }
+
+    def ==(that: Type): Boolean = that match {
       case Top() | Int() => true
       case _             => false
     }
@@ -33,6 +44,12 @@ object Type {
         this.paramType.isSubTypeOf(paramType) && this.returnType.isSubTypeOf(
           paramType
         )
+      case _ => false
+    }
+
+    def ==(that: Type): Boolean = that match {
+      case Function(paramType, returnType) =>
+        this.paramType == paramType && this.returnType == returnType
       case _ => false
     }
   }
@@ -52,12 +69,26 @@ object Type {
         })
       case _ => false
     }
+
+    def ==(that: Type): Boolean = that match {
+      case Record(entries) =>
+        this.entries.size == entries.size && this.entries.forall {
+          case (name, value) =>
+            entries.get(name).map(_ == value).getOrElse(false)
+        }
+      case _ => false
+    }
   }
 
   case class Top() extends Type {
     override def toString: String = "Top"
 
     def isSubTypeOf(that: Type): Boolean = that match {
+      case Top() => true
+      case _     => false
+    }
+
+    def ==(that: Type): Boolean = that match {
       case Top() => true
       case _     => false
     }
