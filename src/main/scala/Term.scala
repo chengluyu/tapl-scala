@@ -40,11 +40,13 @@ object Term {
       case Type.Bool() => {
         val consequentType = consequent.getType(context)
         val alternateType = alternate.getType(context)
-        if (consequentType == alternateType) {
+        if (alternateType isSubTypeOf consequentType) {
           consequentType
+        } else if (consequentType isSubTypeOf alternateType) {
+          alternateType
         } else {
           throw new MyException(
-            s"""branches of the if statement must be in the same type
+            s"""branches of the if statement must be compatible
                |  consequent :: $consequentType
                |  alternate  :: $alternateType""".stripMargin
           )
