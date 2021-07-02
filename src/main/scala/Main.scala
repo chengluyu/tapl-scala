@@ -24,13 +24,22 @@ object Main extends App {
             val message = extra.trace().longAggregateMsg
             ReplResult.Failture(s"Syntax error at $index: $message")
         }
+      case "parse" =>
+        Parser.parse(body) match {
+          case Success(term, _) =>
+            ReplResult.Success(Printer.print(term))
+          case Failure(_, index, extra) =>
+            val message = extra.trace().longAggregateMsg
+            ReplResult.Failture(s"Syntax error at $index: $message")
+        }
       case "quit" => ReplResult.Termination()
       case "exit" => ReplResult.Termination()
       case "help" => ReplResult.Success("""Available commands:
-        | - type <expr>: show type of expr (the default behavior)
-        | - quit       : exit the program
-        | - exit       : exit the program
-        | - help       : show this message""".stripMargin)
+        | - type <expr> : show type of expr (the default behavior)
+        | - parse <expr>: show the syntax tree of expr
+        | - quit        : exit the program
+        | - exit        : exit the program
+        | - help        : show this message""".stripMargin)
     }
 
   def repl: Unit =
