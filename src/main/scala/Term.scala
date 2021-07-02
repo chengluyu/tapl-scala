@@ -7,17 +7,17 @@ trait Term {
 
 object Term {
   final case class True() extends Term {
-    def getType(context: Context): Type = new Type.Bool
+    def getType(context: Context): Type = Type.Bool()
     override def toString: String = "true"
   }
 
   final case class False() extends Term {
-    def getType(context: Context): Type = new Type.Bool
+    def getType(context: Context): Type = Type.Bool()
     override def toString: String = "false"
   }
 
   final case class Int(value: scala.Int) extends Term {
-    def getType(context: Context): Type = new Type.Int
+    def getType(context: Context): Type = Type.Int()
     override def toString: String = value.toString
   }
 
@@ -31,27 +31,25 @@ object Term {
   }
 
   object If {
-    def fromTuple(t: (Term, Term, Term)) = new If(t._1, t._2, t._3)
+    def fromTuple(t: (Term, Term, Term)) = If(t._1, t._2, t._3)
   }
 
   final case class If(test: Term, consequent: Term, alternate: Term)
       extends Term {
     def getType(context: Context): Type = test.getType(context) match {
-      case Type.Bool() => {
+      case Type.Bool() =>
         val consequentType = consequent.getType(context)
         val alternateType = alternate.getType(context)
-        if (alternateType :< consequentType) {
+        if (alternateType :< consequentType)
           consequentType
-        } else if (consequentType :< alternateType) {
+        else if (consequentType :< alternateType)
           alternateType
-        } else {
+        else
           throw new MyException(
             s"""branches of the if statement must be compatible
                |  consequent :: $consequentType
                |  alternate  :: $alternateType""".stripMargin
           )
-        }
-      }
       case testType =>
         throw new MyException(
           s"expect condition of the if statement to be boolean, however received $testType"

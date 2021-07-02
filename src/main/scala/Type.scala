@@ -59,12 +59,12 @@ object Type {
     def :<(that: Type): Boolean = that match {
       case Top() => true
       case Record(entries) =>
-        entries forall (entry => {
+        entries forall (entry =>
           this.entries.get(entry._1) match {
             case Some(value) => value :< entry._2
             case None        => false
           }
-        })
+        )
       case _ => false
     }
 
