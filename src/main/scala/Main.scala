@@ -18,11 +18,11 @@ object Main extends App {
               ReplResult.Success(s"$term :: $termType")
             } catch {
               case e: MyException =>
-                ReplResult.Failture(s"Type error: ${e.getMessage}")
+                ReplResult.Failure(s"Type error: ${e.getMessage}")
             }
           case Failure(_, index, extra) =>
             val message = extra.trace().longAggregateMsg
-            ReplResult.Failture(s"Syntax error at $index: $message")
+            ReplResult.Failure(s"Syntax error at $index: $message")
         }
       case "parse" =>
         Parser.parse(body) match {
@@ -30,7 +30,7 @@ object Main extends App {
             ReplResult.Success(Printer.print(term))
           case Failure(_, index, extra) =>
             val message = extra.trace().longAggregateMsg
-            ReplResult.Failture(s"Syntax error at $index: $message")
+            ReplResult.Failure(s"Syntax error at $index: $message")
         }
       case "quit" => ReplResult.Termination()
       case "exit" => ReplResult.Termination()
@@ -48,7 +48,7 @@ object Main extends App {
         commandPattern findFirstMatchIn line match {
           case Some(value) =>
             perform(value.group("command"), value.group("body"))
-          case None => ReplResult.Failture(s"unknown command")
+          case None => ReplResult.Failure(s"unknown command")
         }
       case code => perform("type", code)
     }) match {
@@ -57,7 +57,7 @@ object Main extends App {
       case ReplResult.Success(result) =>
         println(result)
         repl
-      case ReplResult.Failture(message) =>
+      case ReplResult.Failure(message) =>
         println(message)
         repl
     }
@@ -73,5 +73,5 @@ trait ReplResult {
 object ReplResult {
   case class Termination() extends ReplResult
   case class Success(result: String) extends ReplResult
-  case class Failture(message: String) extends ReplResult
+  case class Failure(message: String) extends ReplResult
 }
